@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:password_bank_flutter/models/data_models.dart';
 import 'package:password_bank_flutter/screens/passwords.dart';
+import 'package:password_bank_flutter/screens/root_user.dart';
 import 'package:password_bank_flutter/services/database_helper.dart';
 import 'package:password_bank_flutter/services/hash_encr_dcr.dart';
 
@@ -20,18 +21,23 @@ class _LogInFormState extends State<LogInForm> {
 
   void replaceLogInScreen(UserInfo user) {
     Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (ctx) => PasswordsScreen(
-                  user: user,
-                  originalUserPassword: _passwordController.text,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (ctx) => PasswordsScreen(
+          user: user,
+          // originalUserPassword: _passwordController.text,
+        ),
+      ),
+    );
   }
 
   void _showSnackBarMessage(String message) {
     ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
   }
 
   void createUser() async {
@@ -58,15 +64,22 @@ class _LogInFormState extends State<LogInForm> {
     _showSnackBarMessage("User added to Database");
   }
 
+  void _showRootUserScreen() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (ctx) => const RootUserScreen()));
+  }
+
   void logIn() async {
     if (_userNameController.text == "" || _passwordController.text == "") {
       _showSnackBarMessage("name and password Field can't be empty");
       return;
     }
-    // print(_userNameController.text);
-    // print(_passwordController.text);
-    // final user = UserInfo(
-    //     name: _userNameController.text, password: _passwordController.text);
+
+    if (_userNameController.text == "root" &&
+        _passwordController.text == "root") {
+      _showRootUserScreen();
+      return;
+    }
 
     final passwordHash = getPasswordHash(_passwordController.text);
     UserInfo? user;
@@ -87,6 +100,7 @@ class _LogInFormState extends State<LogInForm> {
       _showSnackBarMessage("User not in the Database.");
       return;
     }
+
     replaceLogInScreen(user);
   }
 

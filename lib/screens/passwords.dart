@@ -6,13 +6,15 @@ import 'package:password_bank_flutter/screens/user.dart';
 import 'package:password_bank_flutter/screens/log_in.dart';
 import 'package:password_bank_flutter/services/hash_encr_dcr.dart';
 import 'package:flutter/services.dart';
+import 'package:password_bank_flutter/keys/master_key.dart';
 
 class PasswordsScreen extends StatefulWidget {
   final UserInfo user;
-  final String originalUserPassword;
+  // final String originalUserPassword;
 
-  const PasswordsScreen(
-      {super.key, required this.user, required this.originalUserPassword});
+  // const PasswordsScreen(
+  //     {super.key, required this.user, required this.originalUserPassword});
+  const PasswordsScreen({super.key, required this.user});
   @override
   State<PasswordsScreen> createState() {
     return _PasswordsScreenState();
@@ -22,7 +24,7 @@ class PasswordsScreen extends StatefulWidget {
 class _PasswordsScreenState extends State<PasswordsScreen> {
   PasswordInfo? selectedPassword;
   late final UserInfo currentUser;
-  late String currentUserPassword;
+  // late String currentUserPassword;
 
   void _onAddPasswordOverlay() {
     showModalBottomSheet(
@@ -41,7 +43,8 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     // print(currentUserPassword);
     final passwordInfoMap = {
       "title": password.title,
-      "password": decryptPassword(currentUserPassword, password.password),
+      // "password": decryptPassword(currentUserPassword, password.password),
+      "password": decryptPassword(masterKey, password.password),
       "about": password.about
     };
 
@@ -60,14 +63,15 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
 
   void _saveNewPassword(
       String title, String password, String about, bool isNewPassword) {
-    final encryptedPasssword = encryptPassword(currentUserPassword, password);
+    // final encryptedPassword = encryptPassword(currentUserPassword, password);
+    final encryptedPassword = encryptPassword(masterKey, password);
     // print(encryptedPasssword);
     // so some password is edited
     // print(selectedPassword!.id);
     if (selectedPassword != null && !isNewPassword) {
       // print("edit password");
       selectedPassword!.title = title;
-      selectedPassword!.password = encryptedPasssword;
+      selectedPassword!.password = encryptedPassword;
       selectedPassword!.about = about;
       setState(() {
         PasswordDatabaseHelper.updatePassword(selectedPassword!);
@@ -77,7 +81,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
 
     final newPassword = PasswordInfo(
         title: title,
-        password: encryptedPasssword,
+        password: encryptedPassword,
         about: about,
         userId: currentUser.id);
     setState(() {
@@ -92,28 +96,29 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     });
   }
 
-  void _changeallPasswords(final String newPassword) async {
-    final allPasswords = await PasswordDatabaseHelper.getAllPasswords();
-    if (allPasswords != null) {
-      // final user_passwords =
-      //     all_passwords.where((pass) => pass.userId == currentUser.id).toList();
+  // void _changeallPasswords(final String newPassword) async {
+  //   final allPasswords = await PasswordDatabaseHelper.getAllPasswords();
+  //   if (allPasswords != null) {
+  //     // final user_passwords =
+  //     //     all_passwords.where((pass) => pass.userId == currentUser.id).toList();
 
-      for (final pass in allPasswords) {
-        if (pass.userId == currentUser.id) {
-          print(currentUserPassword);
-          print(newPassword);
-          final origPassword =
-              decryptPassword(currentUserPassword, pass.password);
-          pass.password = encryptPassword(newPassword, origPassword);
+  //     for (final pass in allPasswords) {
+  //       if (pass.userId == currentUser.id) {
+  //         // print(currentUserPassword);
+  //         // print(newPassword);
+  //         // final origPassword =
+  //         //     decryptPassword(currentUserPassword, pass.password);
+  //         final origPassword = decryptPassword(masterKey, pass.password);
+  //         pass.password = encryptPassword(newPassword, origPassword);
 
-          setState(() {
-            PasswordDatabaseHelper.updatePassword(pass);
-          });
-        }
-      }
-    }
-    currentUserPassword = newPassword;
-  }
+  //         setState(() {
+  //           PasswordDatabaseHelper.updatePassword(pass);
+  //         });
+  //       }
+  //     }
+  //   }
+  //   // currentUserPassword = newPassword;
+  // }
 
   void _saveEditedUser(String name, String password) {
     // final userDB = UserDatabaseHelper();
@@ -124,9 +129,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     currentUser.password = getPasswordHash(password);
     UserDatabaseHelper.updateUser(currentUser);
 
-    if (currentUserPassword != password) {
-      _changeallPasswords(password);
-    }
+    // if (currentUserPassword != password) {
+    //   _changeallPasswords(password);
+    // }
   }
 
   void _deleteCurrentUser() {
@@ -146,8 +151,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   }
 
   void _copyPassword() async {
-    final origPassword =
-        decryptPassword(currentUserPassword, selectedPassword!.password);
+    // final origPassword =
+    //     decryptPassword(currentUserPassword, selectedPassword!.password);
+    final origPassword = decryptPassword(masterKey, selectedPassword!.password);
     await Clipboard.setData(ClipboardData(text: origPassword));
     _showCopySnackbar();
   }
@@ -155,7 +161,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   @override
   void initState() {
     currentUser = widget.user;
-    currentUserPassword = widget.originalUserPassword;
+    // currentUserPassword = widget.originalUserPassword;
     super.initState();
   }
 
