@@ -6,7 +6,7 @@ import 'package:password_bank_flutter/widgets/user_info_change.dart';
 
 class UserScreen extends StatefulWidget {
   final UserInfo user;
-  final Function(String name) onSaveEditedUser;
+  final Function(String name, String password) onSaveEditedUser;
   final Function() onDeleteUser;
 
   const UserScreen(
@@ -26,12 +26,12 @@ class _UserScreenState extends State<UserScreen> {
   final passwordDB = PasswordDatabaseHelper();
   late final UserInfo currentUser;
 
-  void _saveEditedUser(String name) {
+  void _saveEditedUser(String name, String password) {
     setState(() {
       currentUser.name = name;
     });
     // currentUser.password = getPasswordHash(password);
-    widget.onSaveEditedUser(name);
+    widget.onSaveEditedUser(name, password);
   }
 
   void _showUserEditForm() {

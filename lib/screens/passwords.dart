@@ -92,36 +92,41 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     });
   }
 
-  // void _changeallPasswords() async {
-  //   final all_passwords = await passwordDatabase.getAllPasswords();
-  //   if (all_passwords != null) {
-  //     // final user_passwords =
-  //     //     all_passwords.where((pass) => pass.userId == currentUser.id).toList();
+  void _changeallPasswords(final String newPassword) async {
+    final allPasswords = await PasswordDatabaseHelper.getAllPasswords();
+    if (allPasswords != null) {
+      // final user_passwords =
+      //     all_passwords.where((pass) => pass.userId == currentUser.id).toList();
 
-  //     for (final pass in all_passwords) {
-  //       if (pass.userId == currentUser.id) {
-  //         print(currentUserPassword);
-  //         pass.password = encryptPassword(currentUserPassword, pass.password);
-  //         setState() {
-  //           passwordDatabase.updatePassword(pass);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+      for (final pass in allPasswords) {
+        if (pass.userId == currentUser.id) {
+          print(currentUserPassword);
+          print(newPassword);
+          final origPassword =
+              decryptPassword(currentUserPassword, pass.password);
+          pass.password = encryptPassword(newPassword, origPassword);
 
-  void _saveEditedUser(String name) {
+          setState(() {
+            PasswordDatabaseHelper.updatePassword(pass);
+          });
+        }
+      }
+    }
+    currentUserPassword = newPassword;
+  }
+
+  void _saveEditedUser(String name, String password) {
     // final userDB = UserDatabaseHelper();
     setState(() {
       currentUser.name = name;
       // currentUserPassword = password;
     });
-    // currentUser.password = getPasswordHash(password);
+    currentUser.password = getPasswordHash(password);
     UserDatabaseHelper.updateUser(currentUser);
 
-    // if (currentUser.password != widget.originalUserPassword) {
-    //   _changeallPasswords();
-    // }
+    if (currentUserPassword != password) {
+      _changeallPasswords(password);
+    }
   }
 
   void _deleteCurrentUser() {

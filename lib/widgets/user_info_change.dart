@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UserInfoChange extends StatefulWidget {
   final String username;
-  final Function(String name) onSaveEditedUser;
+  final Function(String name, String password) onSaveEditedUser;
 
   const UserInfoChange(
       {super.key, required this.username, required this.onSaveEditedUser});
@@ -14,15 +14,15 @@ class UserInfoChange extends StatefulWidget {
 
 class _UserInfoChangeState extends State<UserInfoChange> {
   final _nameController = TextEditingController();
-  // final _passwordController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   _saveEditedUser() {
-    // if (_nameController.text != "" && _passwordController.text != "") {
-    //   widget.onSaveEditedUser(_nameController.text, _passwordController.text);
-    // }
-    if (_nameController.text != "") {
-      widget.onSaveEditedUser(_nameController.text);
+    if (_nameController.text != "" && _passwordController.text != "") {
+      widget.onSaveEditedUser(_nameController.text, _passwordController.text);
     }
+    // if (_nameController.text != "") {
+    //   widget.onSaveEditedUser(_nameController.text);
+    // }
     Navigator.pop(context);
   }
 
@@ -44,9 +44,13 @@ class _UserInfoChangeState extends State<UserInfoChange> {
               decoration: const InputDecoration(label: Text("User name")),
               controller: _nameController,
             ),
-            // TextFormField(
-            //   controller: _passwordController,
-            // ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(label: Text("User name")),
+              controller: _passwordController,
+            ),
             const SizedBox(
               height: 10,
             ),
