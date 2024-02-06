@@ -18,7 +18,6 @@ class _RootUserScreenState extends State<RootUserScreen> {
   UserInfo? selectedUser;
 
   void _saveEditedUser(String name, String password) {
-    // print("${name}, ${password}");
     if (selectedUser != null) {
       selectedUser!.name = name;
       selectedUser!.password = getPasswordHash(password);
@@ -43,7 +42,7 @@ class _RootUserScreenState extends State<RootUserScreen> {
         useSafeArea: true,
         isScrollControlled: true,
         builder: (ctx) => UserEditForm(
-            userName: selectedUser!.name,
+            user: selectedUser!,
             onSaveUser: _saveEditedUser,
             onDeleteUser: _deleteUser));
   }
@@ -52,14 +51,23 @@ class _RootUserScreenState extends State<RootUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("All Users"),
+        title: Text(
+          "All Users",
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (ctx) => const LogInScreen()));
-              },
-              icon: const Icon(Icons.logout))
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (ctx) => const LogInScreen()));
+            },
+            icon: Icon(
+              Icons.logout,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+          )
         ],
       ),
       body: FutureBuilder(

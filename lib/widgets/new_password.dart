@@ -57,6 +57,14 @@ class _NewPasswordState extends State<NewPassword> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _passwordController.dispose();
+    _aboutController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final keyBoardSpace = MediaQuery.of(context).viewInsets.bottom;
     return SizedBox(

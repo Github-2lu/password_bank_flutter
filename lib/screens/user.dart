@@ -21,7 +21,6 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-  // bool isReadOnly = true;
   final userDB = UserDatabaseHelper();
   final passwordDB = PasswordDatabaseHelper();
   late final UserInfo currentUser;
@@ -30,7 +29,6 @@ class _UserScreenState extends State<UserScreen> {
     setState(() {
       currentUser.name = name;
     });
-    // currentUser.password = getPasswordHash(password);
     widget.onSaveEditedUser(name, password);
   }
 

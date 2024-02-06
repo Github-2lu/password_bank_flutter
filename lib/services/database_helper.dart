@@ -7,12 +7,9 @@ class UserDatabaseHelper {
   static const String dbName = "data.db";
   static const String tableName = "User";
 
-  // DatabaseHelper({required this.dbName, required this.tableName});
-
   static Future<Database> _getDB() async {
     const String dbCreateSql =
-        "CREATE TABLE $tableName (id TEXT PRIMARY KEY, name VARCHAR NOT NULL, password VARCHAR NOT NULL);";
-    // print(join(await getDatabasesPath(), dbName));
+        "CREATE TABLE $tableName (id TEXT PRIMARY KEY, name VARCHAR NOT NULL, password VARCHAR NOT NULL, emailId VARCHAR NOT NULL);";
     return openDatabase(join(await getDatabasesPath(), dbName),
         onCreate: (db, version) async => await db.execute(dbCreateSql),
         version: _version);
@@ -20,7 +17,6 @@ class UserDatabaseHelper {
 
   static Future<int> addUser(UserInfo user) async {
     final db = await _getDB();
-    // print("${user.id}, ${user.name}, ${user.password}");
     return await db.insert(tableName, user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
@@ -57,12 +53,9 @@ class PasswordDatabaseHelper {
   static const String dbName = "data1.db";
   static const String tableName = "Test";
 
-  // DatabaseHelper({required this.dbName, required this.tableName});
-
   static Future<Database> _getDB() async {
     const String dbCreateSql =
         "CREATE TABLE $tableName (id TEXT PRIMARY KEY, title VARCHAR NOT NULL, password VARCHAR NOT NULL, about VARCHAR,  userId  VARCHAR NOT NULL);";
-    // print(join(await getDatabasesPath(), dbName));
     return openDatabase(join(await getDatabasesPath(), dbName),
         onCreate: (db, version) async => await db.execute(dbCreateSql),
         version: _version);
@@ -70,8 +63,6 @@ class PasswordDatabaseHelper {
 
   static Future<int> addPassword(PasswordInfo password) async {
     final db = await _getDB();
-    // print(
-    // "${password.id}, ${password.title}, ${password.password}, ${password.about}, ${password.userId}");
     return await db.insert(tableName, password.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }

@@ -20,9 +20,6 @@ class _UserInfoChangeState extends State<UserInfoChange> {
     if (_nameController.text != "" && _passwordController.text != "") {
       widget.onSaveEditedUser(_nameController.text, _passwordController.text);
     }
-    // if (_nameController.text != "") {
-    //   widget.onSaveEditedUser(_nameController.text);
-    // }
     Navigator.pop(context);
   }
 
@@ -30,6 +27,13 @@ class _UserInfoChangeState extends State<UserInfoChange> {
   void initState() {
     _nameController.text = widget.username;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override

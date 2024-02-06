@@ -8,7 +8,6 @@ String getPasswordHash(String password) {
 
 String encryptPassword(String userPassword, String password) {
   final keyString = userPassword.padRight(16, 'a').substring(0, 16);
-  // print(keyString);
   final key = encryption.Key.fromUtf8(keyString);
   final encryptor =
       encryption.Encrypter(encryption.AES(key, mode: encryption.AESMode.cbc));

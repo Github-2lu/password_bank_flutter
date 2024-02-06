@@ -9,16 +9,18 @@ class UserInfo {
   final String id;
   String name;
   String password;
+  String emailId;
 
-  UserInfo({required this.name, required this.password}) : id = uuid.v4();
+  UserInfo({required this.name, required this.password, required this.emailId}) : id = uuid.v4();
 
   UserInfo.fromJson(Map<String, dynamic> userInfoJson)
       : id = userInfoJson["id"],
         name = userInfoJson["name"],
-        password = userInfoJson["password"];
+        password = userInfoJson["password"],
+        emailId = userInfoJson["emailId"];
 
   Map<String, dynamic> toJson() =>
-      {"id": id, "name": name, "password": password};
+      {"id": id, "name": name, "password": password, "emailId": emailId};
 }
 
 class PasswordInfo {

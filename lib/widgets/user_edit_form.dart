@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:password_bank_flutter/models/data_models.dart';
 
 class UserEditForm extends StatefulWidget {
-  final String userName;
+  final UserInfo user;
   final Function(String userName, String password) onSaveUser;
   final Function() onDeleteUser;
 
   const UserEditForm(
       {super.key,
-      required this.userName,
+      required this.user,
       required this.onSaveUser,
       required this.onDeleteUser});
 
@@ -20,13 +21,17 @@ class UserEditForm extends StatefulWidget {
 class _UserEditFormState extends State<UserEditForm> {
   final _userNameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
 
   void setInitialValues() {
-    _userNameController.text = widget.userName;
+    _userNameController.text = widget.user.name;
+    _emailController.text = widget.user.emailId;
   }
 
   void _onSaveUser() {
-    if (_userNameController.text != "" && _passwordController.text != "") {
+    if (_userNameController.text != "" &&
+        _passwordController.text != "" &&
+        _emailController.text != "") {
       widget.onSaveUser(_userNameController.text, _passwordController.text);
       Navigator.pop(context);
     }
@@ -41,6 +46,14 @@ class _UserEditFormState extends State<UserEditForm> {
   void initState() {
     setInitialValues();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _userNameController.dispose();
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -65,6 +78,13 @@ class _UserEditFormState extends State<UserEditForm> {
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(label: Text("Password")),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(label: Text("Email")),
               ),
               const SizedBox(
                 height: 15,
