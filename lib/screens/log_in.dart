@@ -8,15 +8,13 @@ class LogInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
       appBar: AppBar(
-          title: Text(
-        "Log In Screen",
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(color: kColorScheme.onPrimary, fontWeight: FontWeight.bold),
-      )),
+        title: Text(
+          "Log In Screen",
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: kColorScheme.onPrimary, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: const LogInForm(),
     );
   }

@@ -31,6 +31,7 @@ class _RootUserScreenState extends State<RootUserScreen> {
   void _deleteUser() {
     if (selectedUser != null) {
       setState(() {
+        PasswordDatabaseHelper.deletePasswordUsingUserId(selectedUser!);
         UserDatabaseHelper.deleteUser(selectedUser!);
       });
     }
@@ -38,6 +39,7 @@ class _RootUserScreenState extends State<RootUserScreen> {
 
   void _showUserEditForm() {
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         context: context,
         useSafeArea: true,
         isScrollControlled: true,

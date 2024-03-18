@@ -110,6 +110,9 @@ class _CreateUserState extends State<CreateUser> {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   ElevatedButton(

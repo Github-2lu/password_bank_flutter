@@ -1,5 +1,6 @@
-const masterKey = "root";
+// This should be for backend functionalities.
+// Here server can send otp to user if user forgets password.
 
-const serverEmail = "sudipdatta2002@gmail.com";
+const serverEmail = "<server email>";
 
-const serverEmailPassword = "pahifrmjjjwahdnr";
+const serverEmailPassword = "<server password>";

@@ -119,6 +119,8 @@ class _LogInFormState extends State<LogInForm> {
               TextButton(
                   onPressed: () {
                     showModalBottomSheet(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         context: context,
                         useSafeArea: true,
                         isScrollControlled: true,

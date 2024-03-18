@@ -6,7 +6,7 @@ import 'package:password_bank_flutter/screens/user.dart';
 import 'package:password_bank_flutter/screens/log_in.dart';
 import 'package:password_bank_flutter/services/hash_encr_dcr.dart';
 import 'package:flutter/services.dart';
-import 'package:password_bank_flutter/keys/master_key.dart';
+import 'package:password_bank_flutter/widgets/search_field.dart';
 
 class PasswordsScreen extends StatefulWidget {
   final UserInfo user;
@@ -20,9 +20,13 @@ class PasswordsScreen extends StatefulWidget {
 class _PasswordsScreenState extends State<PasswordsScreen> {
   PasswordInfo? selectedPassword;
   late final UserInfo currentUser;
+  bool _showSearchField = false;
+  List<PasswordInfo> _allPasswords = [];
+  String _initSearchText = "";
 
   void _onAddPasswordOverlay() {
     showModalBottomSheet(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         useSafeArea: true,
         isScrollControlled: true,
         context: context,
@@ -37,11 +41,12 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   void _onEditPasswordOverlay(PasswordInfo password) {
     final passwordInfoMap = {
       "title": password.title,
-      "password": decryptPassword(masterKey, password.password),
+      "password": password.password,
       "about": password.about
     };
 
     showModalBottomSheet(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         useSafeArea: true,
         isScrollControlled: true,
         context: context,
@@ -56,10 +61,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
 
   void _saveNewPassword(
       String title, String password, String about, bool isNewPassword) {
-    final encryptedPassword = encryptPassword(masterKey, password);
     if (selectedPassword != null && !isNewPassword) {
       selectedPassword!.title = title;
-      selectedPassword!.password = encryptedPassword;
+      selectedPassword!.password = password;
       selectedPassword!.about = about;
       setState(() {
         PasswordDatabaseHelper.updatePassword(selectedPassword!);
@@ -68,10 +72,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     }
 
     final newPassword = PasswordInfo(
-        title: title,
-        password: encryptedPassword,
-        about: about,
-        userId: currentUser.id);
+        title: title, password: password, about: about, userId: currentUser.id);
     setState(() {
       PasswordDatabaseHelper.addPassword(newPassword);
     });
@@ -89,7 +90,6 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     });
     currentUser.password = getPasswordHash(password);
     UserDatabaseHelper.updateUser(currentUser);
-
   }
 
   void _deleteCurrentUser() {
@@ -108,9 +108,23 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   }
 
   void _copyPassword() async {
-    final origPassword = decryptPassword(masterKey, selectedPassword!.password);
-    await Clipboard.setData(ClipboardData(text: origPassword));
+    await Clipboard.setData(ClipboardData(text: selectedPassword!.password));
     _showCopySnackbar();
+  }
+
+  List<PasswordInfo> _searchPasswords() {
+    List<PasswordInfo> searchedPasswords = [];
+    searchedPasswords = _allPasswords
+        .where((password) => password.title.contains(_initSearchText))
+        .toList();
+
+    return searchedPasswords;
+  }
+
+  void _changeSearchText(String searchText) {
+    setState(() {
+      _initSearchText = searchText;
+    });
   }
 
   @override
@@ -123,73 +137,98 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Passwords",
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-              onPressed: _onAddPasswordOverlay,
-              icon: Icon(
-                Icons.add,
-                color: Theme.of(context).colorScheme.onPrimary,
-              )),
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.search,
-                color: Theme.of(context).colorScheme.onPrimary,
-              )),
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (ctx) => const LogInScreen()));
-              },
-              icon: Icon(
-                Icons.logout,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ))
-        ],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (ctx) => UserScreen(
-                          user: currentUser,
-                          onSaveEditedUser: _saveEditedUser,
-                          onDeleteUser: _deleteCurrentUser,
-                        )));
-          },
-          icon: Icon(
-            Icons.supervised_user_circle,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
+        title: _showSearchField
+            ? SearchField(
+                onSearchPassword: _changeSearchText,
+              )
+            : Text(
+                "Passwords",
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold),
+              ),
+        actions: _showSearchField
+            ? null
+            : [
+                IconButton(
+                    onPressed: _onAddPasswordOverlay,
+                    icon: Icon(
+                      Icons.add,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    )),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _showSearchField = true;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.search,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    )),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const LogInScreen()));
+                    },
+                    icon: Icon(
+                      Icons.logout,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ))
+              ],
+        leading: _showSearchField
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _showSearchField = false;
+                    _initSearchText = "";
+                  });
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ))
+            : IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (ctx) => UserScreen(
+                                user: currentUser,
+                                onSaveEditedUser: _saveEditedUser,
+                                onDeleteUser: _deleteCurrentUser,
+                              )));
+                },
+                icon: Icon(
+                  Icons.supervised_user_circle,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
       ),
       body: FutureBuilder(
           future: PasswordDatabaseHelper.getAllPasswords(),
           builder: (context, AsyncSnapshot<List<PasswordInfo>?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
+            if (snapshot.hasError) {
               return Center(
                 child: Text(snapshot.error.toString()),
               );
             } else if (snapshot.hasData) {
-              if (snapshot.data != null) {
-                final userPasswords = snapshot.data!
-                    .where((element) => element.userId == currentUser.id)
-                    .toList();
+              _allPasswords = snapshot.data!
+                  .where((element) => element.userId == currentUser.id)
+                  .toList();
+
+              _allPasswords = _searchPasswords();
+
+              if (_allPasswords.isNotEmpty) {
                 return ListView.builder(
-                  itemCount: userPasswords.length,
+                  itemCount: _allPasswords.length,
                   itemBuilder: (context, index) => Card(
                     margin: const EdgeInsets.all(8),
                     child: InkWell(
                       onTap: () async {
-                        selectedPassword = userPasswords[index];
+                        selectedPassword = _allPasswords[index];
                         _onEditPasswordOverlay(selectedPassword!);
                       },
                       child: Padding(
@@ -198,7 +237,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                         child: Row(
                           children: [
                             Text(
-                              userPasswords[index].title,
+                              _allPasswords[index].title,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
@@ -207,7 +246,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                             const Spacer(),
                             IconButton(
                                 onPressed: () {
-                                  selectedPassword = userPasswords[index];
+                                  selectedPassword = _allPasswords[index];
                                   _copyPassword();
                                 },
                                 icon: const Icon(Icons.copy))
@@ -217,11 +256,13 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                     ),
                   ),
                 );
+              } else {
+                return const Center(
+                  child: Text("No Password Found"),
+                );
               }
             }
-            return const Center(
-              child: Text("No Password Saved"),
-            );
+            return const Center(child: Text("No Password Found"));
           }),
     );
   }

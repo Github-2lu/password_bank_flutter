@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// This widget is used for both new password addition and edit existing password info
+
 class NewPassword extends StatefulWidget {
   final void Function(
           String title, String password, String about, bool isNewPassword)
@@ -67,6 +69,29 @@ class _NewPasswordState extends State<NewPassword> {
   @override
   Widget build(BuildContext context) {
     final keyBoardSpace = MediaQuery.of(context).viewInsets.bottom;
+
+    // This is used to show delete option only when we are adding new password
+    List<Widget> buttons = [
+      ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text("Cancel")),
+      const SizedBox(
+        width: 10,
+      ),
+      ElevatedButton(
+        onPressed: _onSaveNewPassword,
+        child: const Text("Save"),
+      ),
+      const Spacer(),
+    ];
+
+    if (!_isNewPassword) {
+      buttons.add(ElevatedButton(
+          onPressed: _onDeletePassword, child: const Text("Delete")));
+    }
+
     return SizedBox(
       height: double.infinity,
       child: SingleChildScrollView(
@@ -97,23 +122,7 @@ class _NewPasswordState extends State<NewPassword> {
                 height: 15,
               ),
               Row(
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel")),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: _onSaveNewPassword,
-                    child: const Text("Save"),
-                  ),
-                  const Spacer(),
-                  ElevatedButton(
-                      onPressed: _onDeletePassword, child: const Text("Delete"))
-                ],
+                children: buttons,
               )
             ],
           ),
